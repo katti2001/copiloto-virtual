@@ -1,0 +1,20 @@
+video:
+  camera_index: 0
+  target_fps: 15
+  min_face_confidence: 0.5
+
+thresholds:
+  ear_closed: 0.21       # ojo cerrado
+  ear_frames: 6          # frames consecutivos ojo cerrado (menor = más sensible)
+  mar_yawn: 0.65         # boca abierta
+  mar_frames: 6          # frames consecutivos bostezo (menor = más sensible)
+  head_pitch_deg: 15     # inclinación hacia abajo
+
+alerts:
+  quiz_timeout_sec: 8
+  cooldown_sec: 0        # tiempo mínimo entre alertas (0 = inmediato)
+  tts_voice_enabled: true
+  stt_enabled: true
+
+logging:
+  debug: true
