@@ -1,28 +1,54 @@
 import random
-from typing import Tuple
+from typing import Tuple, List
 
 
-def random_math_question() -> Tuple[str, int]:
-    a = random.randint(2, 9)
-    b = random.randint(2, 9)
-    op = random.choice(["+", "*"])
-    if op == "+":
-        return f"¿Cuánto es {a} + {b}?", a + b
-    return f"¿Cuánto es {a} x {b}?", a * b
+QUESTIONS: List[Tuple[str, str, int]] = []
 
 
-def random_trivia_question() -> Tuple[str, str]:
-    questions = [
-        ("¿Capital de Francia?", "paris"),
-        ("¿Color del cielo despejado?", "azul"),
-        ("¿Cuántos días tiene una semana?", "7"),
-    ]
-    return random.choice(questions)
+def _generate_questions():
+    global QUESTIONS
+    QUESTIONS = []
+    
+    for a in range(1, 11):
+        for b in range(1, 11):
+            if a + b <= 20:
+                QUESTIONS.append((f"Cuanto es {a} mas {b}", a + b))
+            if a - b >= 1:
+                QUESTIONS.append((f"Cuanto es {a} menos {b}", a - b))
+    
+    random.shuffle(QUESTIONS)
 
 
-def next_question() -> Tuple[str, str]:
-    if random.random() < 0.6:
-        q, ans = random_math_question()
-    else:
-        q, ans = random_trivia_question()
-    return q, str(ans).strip().lower()
+_generate_questions()
+_q_index = 0
+
+
+def get_question() -> Tuple[str, str]:
+    global _q_index
+    if _q_index >= len(QUESTIONS):
+        _generate_questions()
+        _q_index = 0
+    
+    q, answer = QUESTIONS[_q_index]
+    _q_index += 1
+    return q, str(answer)
+
+
+def check_answer(response: str, correct: str) -> bool:
+    if not response:
+        return False
+    
+    try:
+        if float(response) == float(correct):
+            return True
+    except:
+        pass
+    
+    resp_clean = ''.join(c for c in response.lower() if c.isdigit() or c == '-')
+    try:
+        if float(resp_clean) == float(correct):
+            return True
+    except:
+        pass
+    
+    return False
