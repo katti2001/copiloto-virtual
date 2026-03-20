@@ -23,35 +23,50 @@ class VoiceIO:
     def __init__(self, tts_enabled: bool = True, stt_enabled: bool = True):
         self.tts_enabled = tts_enabled
         self.stt_enabled = stt_enabled
-        self.engine = pyttsx3.init() if tts_enabled else None
         self.recognizer = sr.Recognizer() if stt_enabled else None
         self._tts_lock = threading.Lock()
         self._is_listening = False
 
-        if self.engine:
-            voices = self.engine.getProperty('voices')
-            for voice in voices:
-                if 'spanish' in voice.name.lower() or 'es' in voice.id.lower():
-                    self.engine.setProperty('voice', voice.id)
-                    break
-            self.engine.setProperty('rate', 145)
-            self.engine.setProperty('volume', 1.0)
+        # Detectar voz en español disponible una sola vez al inicio
+        self._spanish_voice_id = None
+        if tts_enabled:
+            try:
+                _tmp = pyttsx3.init()
+                voices = _tmp.getProperty('voices')
+                for voice in voices:
+                    if 'spanish' in voice.name.lower() or 'es' in voice.id.lower():
+                        self._spanish_voice_id = voice.id
+                        _log(f"Voz española encontrada: {voice.name}")
+                        break
+                _tmp.stop()
+            except Exception as e:
+                _log(f"Error detectando voces: {e}")
 
         if self.recognizer:
             self.recognizer.dynamic_energy_threshold = True
             self.recognizer.energy_threshold = 3000
             self.recognizer.pause_threshold = 0.8
 
+    def _make_engine(self):
+        """Crea una nueva instancia del motor TTS. Debe llamarse desde el hilo que lo va a usar."""
+        engine = pyttsx3.init()
+        if self._spanish_voice_id:
+            engine.setProperty('voice', self._spanish_voice_id)
+        engine.setProperty('rate', 145)
+        engine.setProperty('volume', 1.0)
+        return engine
+
     def speak(self, text: str):
-        if not self.tts_enabled or not self.engine:
+        if not self.tts_enabled:
             print(f"TTS: {text}")
             return
         _log(f"HABLA: {text}")
         try:
             with self._tts_lock:
-                self.engine.stop()
-                self.engine.say(text)
-                self.engine.runAndWait()
+                engine = self._make_engine()
+                engine.say(text)
+                engine.runAndWait()
+                engine.stop()
         except Exception as e:
             _log(f"Error TTS: {e}")
 
@@ -141,8 +156,4 @@ class VoiceIO:
         return self._is_listening
 
     def close(self):
-        if self.engine:
-            try:
-                self.engine.stop()
-            except:
-                pass
+        pass  # No hay motor persistente que cerrar
