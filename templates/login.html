@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Automotriz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background: url("https://images.unsplash.com/photo-1503376780353-7e6692767b70") no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Capa oscura encima */
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+        }
+
+        .login-box {
+            position: relative;
+            background: rgba(15, 15, 15, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255,0,0,0.6);
+            animation: fadeIn 1s ease;
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #ff3c3c;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 40px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background: #222;
+            color: white;
+        }
+
+        .input-group input:focus {
+            border: 1px solid #ff3c3c;
+            box-shadow: 0 0 8px #ff3c3c;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 10px;
+            top: 12px;
+            color: #ff3c3c;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff3c3c;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ff3c3c;
+        }
+
+        .footer {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+
+    <!-- Iconos -->
+    <script src="https://kit.fontawesome.com/a2e0e6ad65.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<div class="login-box">
+    <h2>Sistema de Copiloto Virtual</h2>
+
+    <form method="POST">
+
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" name="usuario" placeholder="Usuario">
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" placeholder="Contraseña">
+        </div>
+
+        <button type="submit">Encender 🚀</button>
+
+        <div class="footer">
+            Sistema de control vehicular
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>
