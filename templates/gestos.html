@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Autenticación por Gestos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background: url("https://images.unsplash.com/photo-1503376780353-7e6692767b70") no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+        }
+
+        .gesture-box {
+            position: relative;
+            background: rgba(15, 15, 15, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            width: 450px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255,0,0,0.6);
+            animation: fadeIn 1s ease;
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #ff3c3c;
+        }
+
+        .info {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .info h3 {
+            color: #ff3c3c;
+            margin-top: 0;
+        }
+
+        .info ol {
+            padding-left: 20px;
+        }
+
+        .info li {
+            margin: 10px 0;
+            color: #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff3c3c;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ff3c3c;
+        }
+
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .status.loading {
+            display: block;
+            background: #ffaa00;
+            color: black;
+        }
+
+        .status.success {
+            display: block;
+            background: #00cc00;
+            color: white;
+        }
+
+        .status.error {
+            display: block;
+            background: #ff3c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<div class="gesture-box">
+    <h2>Autenticación por Gestos Faciales</h2>
+    
+    <p>Bienvenido, <strong>{{ username }}</strong></p>
+
+    <div class="info">
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Presiona el botón "Iniciar Autenticación"</li>
+            <li>Se abrirá tu cámara web</li>
+            <li>Realiza la siguiente secuencia:
+                <ul>
+                    <li><strong>3 parpadeos</strong></li>
+                    <li><strong>1 guiño del ojo izquierdo</strong></li>
+                    <li><strong>1 movimiento de cabeza hacia abajo</strong></li>
+                </ul>
+            </li>
+            <li>Presiona ESC para cancelar en cualquier momento</li>
+        </ol>
+    </div>
+
+    <button id="btnIniciar" onclick="iniciarGestos()">Iniciar Autenticación 🎥</button>
+    
+    <div id="status" class="status"></div>
+</div>
+
+<script>
+    function iniciarGestos() {
+        const btn = document.getElementById('btnIniciar');
+        const status = document.getElementById('status');
+        
+        btn.disabled = true;
+        status.className = 'status loading';
+        status.textContent = '⏳ Iniciando cámara... Por favor completa la secuencia de gestos';
+        
+        fetch('/iniciar_gestos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                status.className = 'status success';
+                status.textContent = '✓ Autenticación exitosa! Redirigiendo...';
+                setTimeout(() => {
+                    window.location.href = '/monitor';
+                }, 2000);
+            } else {
+                status.className = 'status error';
+                status.textContent = '✗ Error: ' + (data.error || 'Autenticación fallida');
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            status.className = 'status error';
+            status.textContent = '✗ Error de conexión: ' + error;
+            btn.disabled = false;
+        });
+    }
+</script>
+
+</body>
+</html>

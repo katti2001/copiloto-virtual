@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monitor de Fatiga</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background: url("https://images.unsplash.com/photo-1493238792000-8113da705763") no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+        }
+
+        .monitor-box {
+            position: relative;
+            background: rgba(20, 20, 20, 0.95);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 0 30px rgba(255,0,0,0.6);
+            animation: fadeIn 1s ease;
+            max-width: 600px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #ff3c3c;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .status h3 {
+            color: #00ff00;
+            margin-top: 0;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: pulse 2s infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .info-text {
+            color: #ccc;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        .warning {
+            background: #ffaa00;
+            color: black;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: #ff3c3c;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #cc0000;
+            box-shadow: 0 0 15px #ff3c3c;
+            transform: scale(1.05);
+        }
+
+        .instructions {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            color: #ccc;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<div class="monitor-box">
+    <h1>Monitor de Fatiga Activo 🚗</h1>
+    
+    <div class="status">
+        <h3><span class="status-indicator"></span>Sistema en Monitoreo</h3>
+        <p class="info-text">Usuario: <strong>{{ username }}</strong></p>
+    </div>
+
+    <div class="warning">
+        ⚠️ VENTANA DE CÁMARA ACTIVA
+    </div>
+
+    <div class="instructions">
+        <h3 style="color: #ff3c3c; margin-top: 0;">Instrucciones:</h3>
+        <ul>
+            <li>El sistema está monitoreando tu estado en tiempo real</li>
+            <li>Verás una ventana con tu cámara y métricas</li>
+            <li>Si detecta fatiga, te hará preguntas para verificar tu estado</li>
+            <li>Presiona <strong>ESC</strong> en la ventana de cámara para salir</li>
+        </ul>
+    </div>
+
+    <p class="info-text">
+        El sistema registrará todos los eventos en la base de datos.<br>
+        Mantén la atención en la carretera.
+    </p>
+
+    <a href="/logout" class="btn" onclick="return confirm('¿Seguro que deseas cerrar sesión?')">
+        Cerrar Sesión
+    </a>
+</div>
+
+</body>
+</html>

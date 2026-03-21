@@ -1,0 +1,9 @@
+REQUERIMIENTOS
+1. Módulo de autenticación (Auth Service): Implementación de un control de acceso que asegure que solo
+usuarios autorizados interactúen con los servicios de inferencia de IA.
+2. Ingestión Uni- modal o Multi-modal: Consumo simultáneo de al menos dos streams de datos (ej. captura de
+frames de video y buffers de audio) o de forma independiente.
+3. Capa de inferencia: Procesamiento de los datos mediante modelos de IA (locales o vía API) para la extracción
+de características, reconocimiento de patrones o análisis predictivo.
+4. Lógica de negocio y respuesta: Ejecución de una solución automatizada basada en los insights obtenidos por
+los modelos de IA.

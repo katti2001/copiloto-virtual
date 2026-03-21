@@ -115,6 +115,12 @@
 <div class="login-box">
     <h2>Sistema de Copiloto Virtual</h2>
 
+    {% if error %}
+    <div style="background: #ff3c3c; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        {{ error }}
+    </div>
+    {% endif %}
+
     <form method="POST">
 
         <div class="input-group">

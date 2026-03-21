@@ -18,3 +18,9 @@ alerts:
 
 logging:
   debug: true
+
+database:
+  host: localhost
+  user: root
+  password: ""           # Coloca tu contraseña de MySQL aquí
+  database: detector_fatiga

@@ -6,3 +6,6 @@ SpeechRecognition
 PyAudio
 pyttsx3
 PyYAML
+mysql-connector-python
+bcrypt
+Flask
