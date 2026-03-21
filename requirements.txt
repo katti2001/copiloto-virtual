@@ -3,6 +3,7 @@ mediapipe
 numpy
 sounddevice
 SpeechRecognition
+pocketsphinx
 PyAudio
 pyttsx3
 PyYAML

@@ -26,8 +26,30 @@ class VoiceIO:
         self.recognizer = sr.Recognizer() if stt_enabled else None
         self._tts_lock = threading.Lock()
         self._is_listening = False
+        self._mic_index = None
+        
+        if self.recognizer:
+            self.recognizer.dynamic_energy_threshold = True
+            self.recognizer.energy_threshold = 4000
+            self.recognizer.pause_threshold = 0.5
+            self.recognizer.phrase_threshold = 0.2
+            self.recognizer.non_speaking_duration = 0.4
+            
+            mic_list = sr.Microphone.list_microphone_names()
+            for i, name in enumerate(mic_list):
+                if 'headset' in name.lower() or 'headphone' in name.lower():
+                    if 'input' in name.lower() or 'microphone' in name.lower():
+                        self._mic_index = i
+                        _log(f"Microfono elegido: {name} (index {i})")
+                        break
+            
+            if self._mic_index is None:
+                for i, name in enumerate(mic_list):
+                    if 'microphone' in name.lower():
+                        self._mic_index = i
+                        _log(f"Microfono elegido: {name} (index {i})")
+                        break
 
-        # Detectar voz en español disponible una sola vez al inicio
         self._spanish_voice_id = None
         if tts_enabled:
             try:
@@ -42,13 +64,7 @@ class VoiceIO:
             except Exception as e:
                 _log(f"Error detectando voces: {e}")
 
-        if self.recognizer:
-            self.recognizer.dynamic_energy_threshold = True
-            self.recognizer.energy_threshold = 3000
-            self.recognizer.pause_threshold = 0.8
-
     def _make_engine(self):
-        """Crea una nueva instancia del motor TTS. Debe llamarse desde el hilo que lo va a usar."""
         engine = pyttsx3.init()
         if self._spanish_voice_id:
             engine.setProperty('voice', self._spanish_voice_id)
@@ -106,46 +122,51 @@ class VoiceIO:
         self._is_listening = True
         
         try:
-            with sr.Microphone() as source:
-                _log("Calibrando...")
+            mic = sr.Microphone(device_index=self._mic_index) if self._mic_index else sr.Microphone()
+            
+            with mic as source:
+                _log("Calibrando ruido...")
                 self.recognizer.adjust_for_ambient_noise(source, duration=0.5)
                 _log(f"Threshold: {self.recognizer.energy_threshold:.0f}")
                 _log("Habla ahora!")
                 
-                audio = self.recognizer.listen(source, timeout=timeout, phrase_time_limit=6)
-                
-                _log("Procesando...")
-                text = self.recognizer.recognize_google(audio, language="es-ES")
-                _log(f"ENTENDI: '{text}'")
-                
-                normalized = self._normalize(text)
-                result = self._extract_number(normalized)
-                _log(f"Numero: {result}")
-                
-                return result, "ok"
+                audio = self.recognizer.listen(source, timeout=timeout, phrase_time_limit=5)
+            
+            _log("Procesando con Google...")
+            text = self.recognizer.recognize_google(audio, language="es-ES")
+            _log(f"ENTENDI: '{text}'")
+            
+            normalized = self._normalize(text)
+            result = self._extract_number(normalized)
+            _log(f"Numero extraido: {result}")
+            
+            self._is_listening = False
+            return result, "ok"
                 
         except sr.WaitTimeoutError:
-            _log("TIMEOUT - No hablaste")
+            _log("TIMEOUT - No se detecto voz")
+            self._is_listening = False
             return None, "timeout"
         except sr.UnknownValueError:
-            _log("NO ENTENDI")
+            _log("NO ENTENDI - Habla mas claro")
+            self._is_listening = False
             return None, "unknown"
         except sr.RequestError as e:
-            _log(f"Error: {e}")
+            _log(f"Error Google: {e}")
+            self._is_listening = False
             return None, "error"
         except Exception as e:
             _log(f"Error: {e}")
-            return None, "error"
-        finally:
             self._is_listening = False
+            return None, "error"
         
         return None, "error"
 
     def ask(self, question: str) -> Tuple[Optional[str], bool, str]:
         self.speak(question)
-        time.sleep(0.5)
+        time.sleep(0.2)
         
-        resp, status = self.listen(timeout=8)
+        resp, status = self.listen(timeout=10)
         
         if status == "ok" and resp:
             return resp, True, status
@@ -156,4 +177,4 @@ class VoiceIO:
         return self._is_listening
 
     def close(self):
-        pass  # No hay motor persistente que cerrar
+        pass
